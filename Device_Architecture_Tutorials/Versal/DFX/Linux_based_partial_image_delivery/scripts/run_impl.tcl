@@ -21,8 +21,8 @@ create_pr_configuration -name config_1 -partitions [list design_1_i/rp1:rp1rm3_i
 create_pr_configuration -name config_2 -partitions [list design_1_i/rp1:rp1rm1_inst_0 ]
 create_pr_configuration -name config_3 -partitions [list design_1_i/rp1:rp1rm2_inst_0 ]
 set_property PR_CONFIGURATION config_1 [get_runs impl_1]
-create_run child_0_impl_1 -parent_run impl_1 -flow {Vivado Implementation 2022} -pr_config config_2
-create_run child_1_impl_1 -parent_run impl_1 -flow {Vivado Implementation 2022} -pr_config config_3
+create_run child_0_impl_1 -parent_run impl_1 -flow {Vivado Implementation 2024} -pr_config config_2
+create_run child_1_impl_1 -parent_run impl_1 -flow {Vivado Implementation 2024} -pr_config config_3
 
 #Launch OOC synthesis of RMs, Parent Synthesis, Parent Implementation and Child Implementation
 launch_runs impl_1 child_0_impl_1 child_1_impl_1 -to_step write_bitstream

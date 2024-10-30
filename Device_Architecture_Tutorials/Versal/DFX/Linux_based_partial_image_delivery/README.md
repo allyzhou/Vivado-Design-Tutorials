@@ -16,7 +16,7 @@ This tutorial covers creating a simple Vivado design with one reconfigurable par
 - Vivado and PetaLinux 2023.2
 - Access to a VCK190 board
 - A micro SD card
-- [Xilinx VCK190 BSP](https://www.xilinx.com/member/forms/download/xef.html?filename=xilinx-vck190-v2023.2-10140544.bsp)
+- [Xilinx VCK190 BSP](https://www.xilinx.com/member/forms/download/xef.html?filename=xilinx-vck190-v2024.1-05230256.bsp)
 
 ### Before You Begin
 First, for the commands in this project to work, you must source the Vivado and PetaLinux 2023.2 settings.    
@@ -26,7 +26,7 @@ source <xilinx_install>/Vivado/2023.2/settings64.sh
 source <xilinx_install>/Petalinux/2023.2/settings.sh
 ```
 
-Second, after having downloaded the [BSP](https://www.xilinx.com/member/forms/download/xef.html?filename=xilinx-vck190-v2023.2-10140544.bsp), move it to this project's top-level directory.
+Second, after having downloaded the [BSP](https://www.xilinx.com/member/forms/download/xef.html?filename=xilinx-vck190-v2024.1-05230256.bsp), move it to this project's top-level directory.
 
 Finally, edit <install_directory>/Linux-based-partial-image-delivery/code/libdfx/files/Makefile line 7, changing <INSTALL_DIR> to the absolute path leading to the top-level directory for this project.
 
@@ -104,7 +104,7 @@ Alternatively, to do everything step-by-step:
 
 1. Create the PetaLinux project based on the VCK190 BSP.
 ```bash
-petalinux-create -t project -n versal-dfx -s ./xilinx-vck190-v2023.2-10140544.bsp
+petalinux-create project -n versal-dfx -s ./xilinx-vck190-v2024.1-05230256.bsp
 ```
 
 2. Navigate to the PetaLinux project directory.
@@ -134,19 +134,19 @@ For the automated flow, in order to skip having to open the config menu (which r
 
 4. Create the static app based on the static XSA file you generated in the previous section.
 ```bash
-petalinux-create -t apps --template dfx_dtg_versal_static -n static-app --enable --srcuri "../xsa/static.xsa"
+petalinux-create apps --template dfx_dtg_versal_static -n static-app --enable --srcuri "../xsa/static.xsa"
 ```
 
 5. Create the rprm apps based on the RPRM XSA files you generated in the previous section.
 ```bash
-petalinux-create -t apps --template dfx_dtg_versal_partial -n rp1rm1-app --enable --srcuri "../xsa/rp1rm1.xsa" --static-pn static-app
-petalinux-create -t apps --template dfx_dtg_versal_partial -n rp1rm2-app --enable --srcuri "../xsa/rp1rm2.xsa" --static-pn static-app
-petalinux-create -t apps --template dfx_dtg_versal_partial -n rp1rm3-app --enable --srcuri "../xsa/rp1rm3.xsa" --static-pn static-app
+petalinux-create apps --template dfx_dtg_versal_partial -n rp1rm1-app --enable --srcuri "../xsa/rp1rm1.xsa" --static-pn static-app
+petalinux-create apps --template dfx_dtg_versal_partial -n rp1rm2-app --enable --srcuri "../xsa/rp1rm2.xsa" --static-pn static-app
+petalinux-create apps --template dfx_dtg_versal_partial -n rp1rm3-app --enable --srcuri "../xsa/rp1rm3.xsa" --static-pn static-app
 ```
 
 6. Create the libdfx app and copy over the source code, Makefile, and bitbake file.
 ```bash
-petalinux-create -t apps -n libdfx-app --enable
+petalinux-create apps -n libdfx-app --enable
 cp -r ../code/libdfx/* ../versal-dfx/project-spec/meta-user/recipes-apps/libdfx-app/
 ```
 
@@ -158,7 +158,7 @@ petalinux-build
 8. Navigate to the /images/linux/ directory and create the boot image.
 ```bash
 cd ./images/linux/
-petalinux-package --boot --u-boot
+petalinux-package boot --u-boot
 ```
 
 9. Copy necessary files to a new directory Linux-based-partial-image-delivery/sdcard.

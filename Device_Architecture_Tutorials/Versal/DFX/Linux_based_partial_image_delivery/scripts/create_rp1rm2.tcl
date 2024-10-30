@@ -1,6 +1,6 @@
 
 ################################################################
-# This is a generated script based on design: rp1rm3
+# This is a generated script based on design: rp1rm2
 #
 # Though there are limitations about the generated script,
 # the main purpose of this utility is to make learning
@@ -20,7 +20,7 @@ set script_folder [_tcl::get_script_folder]
 ################################################################
 # Check if script is running in correct Vivado version.
 ################################################################
-set scripts_vivado_version 2023.2
+set scripts_vivado_version 2024.1
 set current_vivado_version [version -short]
 
 if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
@@ -41,7 +41,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 ################################################################
 
 # To test this script, run the following commands from Vivado Tcl console:
-# source rp1rm3_script.tcl
+# source rp1rm2_script.tcl
 
 # If there is no project opened, this script will create a
 # project, but make sure you do not have an existing project
@@ -56,7 +56,7 @@ if { $list_projs eq "" } {
 
 # CHANGE DESIGN NAME HERE
 variable design_name
-set design_name rp1rm3
+set design_name rp1rm2
 
 # If you do not already have an existing IP Integrator design open,
 # you can create a design using the following command:
@@ -131,9 +131,10 @@ set bCheckIPs 1
 if { $bCheckIPs == 1 } {
    set list_check_ips "\ 
 xilinx.com:ip:axi_dbg_hub:2.0\
-xilinx.com:ip:axi_uartlite:2.0\
+xilinx.com:ip:axi_gpio:2.0\
 xilinx.com:ip:axis_ila:1.2\
 xilinx.com:ip:smartconnect:1.0\
+xilinx.com:ip:xlconstant:1.1\
 "
 
    set list_ips_missing ""
@@ -269,7 +270,7 @@ proc create_root_design { parentCell } {
   set s_axi_aclk [ create_bd_port -dir I -type clk -freq_hz 333333008 s_axi_aclk ]
   set_property -dict [ list \
    CONFIG.ASSOCIATED_BUSIF {S00_AXI:S_AXI} \
-   CONFIG.ASSOCIATED_RESET {s_axi_aresetn} \
+   CONFIG.ASSOCIATED_RESET {s_axi_aresetn:aresetn} \
  ] $s_axi_aclk
   set s_axi_aresetn [ create_bd_port -dir I -type rst s_axi_aresetn ]
   set tx_0 [ create_bd_port -dir O tx_0 ]
@@ -277,9 +278,13 @@ proc create_root_design { parentCell } {
   # Create instance: axi_dbg_hub_1, and set properties
   set axi_dbg_hub_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_dbg_hub:2.0 axi_dbg_hub_1 ]
 
-  # Create instance: axi_uartlite_1, and set properties
-  set axi_uartlite_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_uartlite:2.0 axi_uartlite_1 ]
-  set_property CONFIG.C_S_AXI_ACLK_FREQ_HZ {333333008} $axi_uartlite_1
+  # Create instance: axi_gpio_0, and set properties
+  set axi_gpio_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_0 ]
+  set_property -dict [list \
+    CONFIG.C_ALL_INPUTS {1} \
+    CONFIG.C_IS_DUAL {0} \
+    CONFIG.GPIO2_BOARD_INTERFACE {Custom} \
+  ] $axi_gpio_0
 
 
   # Create instance: axis_ila_1, and set properties
@@ -287,31 +292,40 @@ proc create_root_design { parentCell } {
   set_property -dict [list \
     CONFIG.C_MON_TYPE {Mixed} \
     CONFIG.C_NUM_MONITOR_SLOTS {1} \
-    CONFIG.C_NUM_OF_PROBES {3} \
+    CONFIG.C_NUM_OF_PROBES {1} \
   ] $axis_ila_1
 
 
   # Create instance: smartconnect_1, and set properties
   set smartconnect_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 smartconnect_1 ]
-  set_property CONFIG.NUM_SI {1} $smartconnect_1
+  set_property -dict [list \
+    CONFIG.NUM_MI {1} \
+    CONFIG.NUM_SI {1} \
+  ] $smartconnect_1
+
+
+  # Create instance: xlconstant_0, and set properties
+  set xlconstant_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_0 ]
+  set_property -dict [list \
+    CONFIG.CONST_VAL {0xC0000000} \
+    CONFIG.CONST_WIDTH {32} \
+  ] $xlconstant_0
 
 
   # Create interface connections
   connect_bd_intf_net -intf_net dfx_decoupler_0_rp_to_dbg_hub [get_bd_intf_ports S_AXI] [get_bd_intf_pins axi_dbg_hub_1/S_AXI]
   connect_bd_intf_net -intf_net dfx_decoupler_0_rp_to_smartconnect [get_bd_intf_ports S00_AXI] [get_bd_intf_pins smartconnect_1/S00_AXI]
-  connect_bd_intf_net -intf_net smartconnect_1_M00_AXI [get_bd_intf_pins axi_uartlite_1/S_AXI] [get_bd_intf_pins smartconnect_1/M00_AXI]
-connect_bd_intf_net -intf_net [get_bd_intf_nets smartconnect_1_M00_AXI] [get_bd_intf_pins axi_uartlite_1/S_AXI] [get_bd_intf_pins axis_ila_1/SLOT_0_AXI]
+  connect_bd_intf_net -intf_net smartconnect_1_M00_AXI [get_bd_intf_pins axi_gpio_0/S_AXI] [get_bd_intf_pins smartconnect_1/M00_AXI]
+connect_bd_intf_net -intf_net [get_bd_intf_nets smartconnect_1_M00_AXI] [get_bd_intf_pins axi_gpio_0/S_AXI] [get_bd_intf_pins axis_ila_1/SLOT_0_AXI]
 
   # Create port connections
-  connect_bd_net -net axi_uartlite_1_interrupt [get_bd_pins axi_uartlite_1/interrupt] [get_bd_ports interrupt_0] [get_bd_pins axis_ila_1/probe2]
-  connect_bd_net -net axi_uartlite_1_tx [get_bd_pins axi_uartlite_1/tx] [get_bd_ports tx_0] [get_bd_pins axis_ila_1/probe1]
   connect_bd_net -net proc_sys_reset_0_interconnect_aresetn [get_bd_ports aresetn] [get_bd_pins smartconnect_1/aresetn]
-  connect_bd_net -net proc_sys_reset_0_peripheral_aresetn [get_bd_ports s_axi_aresetn] [get_bd_pins axi_dbg_hub_1/aresetn] [get_bd_pins axi_uartlite_1/s_axi_aresetn] [get_bd_pins axis_ila_1/resetn]
-  connect_bd_net -net rx_0_1 [get_bd_ports rx_0] [get_bd_pins axi_uartlite_1/rx] [get_bd_pins axis_ila_1/probe0]
-  connect_bd_net -net versal_cips_0_pl0_ref_clk [get_bd_ports s_axi_aclk] [get_bd_pins axi_dbg_hub_1/aclk] [get_bd_pins axi_uartlite_1/s_axi_aclk] [get_bd_pins axis_ila_1/clk] [get_bd_pins smartconnect_1/aclk]
+  connect_bd_net -net proc_sys_reset_0_peripheral_aresetn [get_bd_ports s_axi_aresetn] [get_bd_pins axi_dbg_hub_1/aresetn] [get_bd_pins axi_gpio_0/s_axi_aresetn] [get_bd_pins axis_ila_1/resetn]
+  connect_bd_net -net versal_cips_0_pl0_ref_clk [get_bd_ports s_axi_aclk] [get_bd_pins axi_dbg_hub_1/aclk] [get_bd_pins axi_gpio_0/s_axi_aclk] [get_bd_pins axis_ila_1/clk] [get_bd_pins smartconnect_1/aclk]
+  connect_bd_net -net xlconstant_0_dout [get_bd_pins xlconstant_0/dout] [get_bd_pins axi_gpio_0/gpio_io_i] [get_bd_pins axis_ila_1/probe0]
 
   # Create address segments
-  assign_bd_address -offset 0xA4420000 -range 0x00010000 -target_address_space [get_bd_addr_spaces S00_AXI] [get_bd_addr_segs axi_uartlite_1/S_AXI/Reg] -force
+  assign_bd_address -offset 0xA4420000 -range 0x00010000 -target_address_space [get_bd_addr_spaces S00_AXI] [get_bd_addr_segs axi_gpio_0/S_AXI/Reg] -force
   assign_bd_address -offset 0xA4200000 -range 0x00200000 -target_address_space [get_bd_addr_spaces S_AXI] [get_bd_addr_segs axi_dbg_hub_1/S_AXI_DBG_HUB/Mem0] -force
 
 

@@ -12,7 +12,7 @@ RP1RM2_XSA=$WORKING_DIR/xsa/rp1rm2.xsa
 RP1RM3_XSA=$WORKING_DIR/xsa/rp1rm3.xsa
 
 # Creating the PetaLinux project based on the BSP file and Versal template
-petalinux-create -t project -n versal-dfx -s $WORKING_DIR/xilinx-vck190-v2023.2-10140544.bsp
+petalinux-create project -n versal-dfx -s $WORKING_DIR/xilinx-vck190-v2024.1-05230256.bsp
 
 # To automate this script we want to skip past the  petalinx-config step in the manual version of this script since it requires user input, we are instead copying over the config file with everything pre-set
 cp $WORKING_DIR/code/petalinux/config $WORKING_DIR/versal-dfx/project-spec/configs/
@@ -26,15 +26,15 @@ petalinux-build -x mrproper
 petalinux-config --get-hw-description $DESIGN_XSA --silentconfig
 
 # Creating the static app
-petalinux-create -t apps --template dfx_dtg_versal_static -n static-app --enable --srcuri "$STATIC_XSA"
+petalinux-create apps --template dfx_dtg_versal_static -n static-app --enable --srcuri "$STATIC_XSA"
 
 # Create the rprm apps
-petalinux-create -t apps --template dfx_dtg_versal_partial -n rp1rm1-app --enable --srcuri "$RP1RM1_XSA" --static-pn static-app
-petalinux-create -t apps --template dfx_dtg_versal_partial -n rp1rm2-app --enable --srcuri "$RP1RM2_XSA" --static-pn static-app
-petalinux-create -t apps --template dfx_dtg_versal_partial -n rp1rm3-app --enable --srcuri "$RP1RM3_XSA" --static-pn static-app
+petalinux-create apps --template dfx_dtg_versal_partial -n rp1rm1-app --enable --srcuri "$RP1RM1_XSA" --static-pn static-app
+petalinux-create apps --template dfx_dtg_versal_partial -n rp1rm2-app --enable --srcuri "$RP1RM2_XSA" --static-pn static-app
+petalinux-create apps --template dfx_dtg_versal_partial -n rp1rm3-app --enable --srcuri "$RP1RM3_XSA" --static-pn static-app
 
 # Create the libdfx app
-petalinux-create -t apps -n libdfx-app --enable
+petalinux-create apps -n libdfx-app --enable
 cp -r $WORKING_DIR/code/libdfx/* $WORKING_DIR/versal-dfx/project-spec/meta-user/recipes-apps/libdfx-app/
 
 # Build the project
@@ -42,6 +42,6 @@ petalinux-build
 
 # Create the boot image and copy to SD card
 cd $WORKING_DIR/versal-dfx/images/linux/
-petalinux-package --boot --u-boot
+petalinux-package boot --u-boot
 mkdir $WORKING_DIR/sdcard
 cp BOOT.BIN boot.scr image.ub rootfs.tar.gz $WORKING_DIR/sdcard
