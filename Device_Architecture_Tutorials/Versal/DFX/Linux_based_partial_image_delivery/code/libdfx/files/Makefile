@@ -4,7 +4,7 @@ APP = libdfx-app
 APP_OBJS = libdfx-app.o
 
 # Adding library
-LDLIBS += -L/group/bcapps/janb/petalinux_upgrade/2024.1/Vivado-Design-Tutorials/Device_Architecture_Tutorials/Versal/DFX/Linux_based_partial_image_delivery/versal-dfx/project-spec/meta-user/recipes-apps/libdfx-app/files -Bstatic -ldfx
+LDLIBS += -L<INSTALL_DIR>/Linux_based_partial_image_delivery/versal-dfx/project-spec/meta-user/recipes-apps/libdfx-app/files -Bstatic -ldfx
 
 all: build
 
