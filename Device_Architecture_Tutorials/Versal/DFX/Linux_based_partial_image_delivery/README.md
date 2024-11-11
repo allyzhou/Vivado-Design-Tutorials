@@ -7,23 +7,23 @@
 </table>
 
 # Linux-based partial image delivery
-<b><i>Version: Vivado 2023.2</b></i><p>
+<b><i>Version: Vivado 2024.1</b></i><p>
 
 ## Introduction
 This tutorial covers creating a simple Vivado design with one reconfigurable partition and three reconfigurable modules. This design is then used to create a PetaLinux project which will make use of fpgautil and libdfx to program the PL and load the device tree overlays with the relevant driver information.
 
 ### Prerequisites
-- Vivado and PetaLinux 2023.2
+- Vivado and PetaLinux 2024.1
 - Access to a VCK190 board
 - A micro SD card
 - [Xilinx VCK190 BSP](https://www.xilinx.com/member/forms/download/xef.html?filename=xilinx-vck190-v2024.1-05230256.bsp)
 
 ### Before You Begin
-First, for the commands in this project to work, you must source the Vivado and PetaLinux 2023.2 settings.    
+First, for the commands in this project to work, you must source the Vivado and PetaLinux 2024.1 settings.    
 
 ```bash
-source <xilinx_install>/Vivado/2023.2/settings64.sh
-source <xilinx_install>/Petalinux/2023.2/settings.sh
+source <xilinx_install>/Vivado/2024.1/settings64.sh
+source <xilinx_install>/Petalinux/2024.1/settings.sh
 ```
 
 Second, after having downloaded the [BSP](https://www.xilinx.com/member/forms/download/xef.html?filename=xilinx-vck190-v2024.1-05230256.bsp), move it to this project's top-level directory.
