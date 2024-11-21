@@ -35,6 +35,12 @@
   </tr>
   <tr>
     <td align="center">
+      <a href="./Performance_Analysis_in_Simulation/">Performance Analysis in Simulation</a>
+    </td>
+    <td>This tutorial show the significance of simulating your design and how major performance issues can be found in the simulation phase through the use of the Command Parser tool.</td>
+  </tr>
+  <tr>
+    <td align="center">
       <a href="./Performance_Tuning/">Performance Tuning</a>
     </td>
     <td>This tutorial presents a more complex design example, which demonstrates the process of refining the NoC and DDRMC design to achieve performance goals.</td>
