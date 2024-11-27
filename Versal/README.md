@@ -23,6 +23,11 @@ These tutorials show fundamentals of the DFX design flow through Vivado. Topics 
 These tutorials show the capabilities of ChipScope, including the Integrated Logic Analyzer (AXIS-ILA) and the Integrated Bit Error Ratio Tester (IBERT).
 
 
+## <a href="./High_Speed_Serial/">High Speed Serial</a>
+
+These tutorials show the IP and hardware features enabling high speed serial interfaces.
+
+
 ## <a href="./IO_Design/">I/O Design</a>
 
 These tutorials show how to construct source synchronous high-speed I/O interfaces using the Advanced I/O Wizard. Both single-bank and multi-bank designs are presented.
@@ -50,6 +55,5 @@ AI Engines are supported through the Vitis&trade; Unified Development Environmen
 
 <hr class="sphinxhide"></hr>
 
-<p class="sphinxhide" align="center"><sub>Copyright © 2020–2024 Advanced Micro Devices, Inc.</sub></p>
-
-<p class="sphinxhide" align="center"><sup><a href="https://www.amd.com/en/corporate/copyright">Terms and Conditions</a></sup></p>
+<p class="sphinxhide" align="center"><sub>Copyright © 2024 Advanced Micro Devices, Inc.</sub></p>
+<!-- # SPDX-License-Identifier: X11 -->  

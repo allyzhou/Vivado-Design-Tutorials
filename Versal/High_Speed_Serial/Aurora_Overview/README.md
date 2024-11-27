@@ -142,5 +142,4 @@ The Aurora 64B66B IP instance (1) connects to the GT Wizard subsystem (4) using 
 <hr class="sphinxhide"></hr>
 
 <p class="sphinxhide" align="center"><sub>Copyright © 2024 Advanced Micro Devices, Inc.</sub></p>
-
-<p class="sphinxhide" align="center"><sup><a href="https://www.amd.com/en/corporate/copyright">Terms and Conditions</a></sup></p>
+<!-- # SPDX-License-Identifier: X11 -->  
