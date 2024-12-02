@@ -29,8 +29,7 @@ set_property APERTURES [list {0x202_0000_0000:0x202_001F_FFFF}] $pl_nsu_from_pl
 set_property EXCLUSIVE_ROUTING_GROUP mm_group $conn1
 
 # Setting REMAP on PL to PL  AXI-MM NoC path
-set_property REMAPS [list {0x0000_0000:0xFFFF_FFFF,0x202_0000_0000:0x202_1FFF_FFFF}] $conn1
-
+set_property REMAPS [list {0x0000_0000 0x202_0000_0000 4G}] $conn1
 
 ################################
 # AXIS 
