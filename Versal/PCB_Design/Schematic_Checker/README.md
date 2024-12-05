@@ -1,4 +1,4 @@
-﻿<table class="sphinxhide" width="100%">
+<table class="sphinxhide" width="100%">
  <tr width="100%">
     <td align="center"><img src="https://github.com/Xilinx/Image-Collateral/blob/main/xilinx-logo.png?raw=true" width="30%"/><h1>Versal™ Adaptive SoC PCB Design Tutorials</h1>
     <a href="https://www.amd.com/en/products/software/adaptive-socs-and-fpgas/vivado.html">See Vivado™ Development Environment on amd.com</a>
@@ -8,192 +8,216 @@
 
 # Schematic Checker Tool
 
-***Version: Vivado 2021.1***
-
-
+***Version: Vivado 2024.2***
 
 ## Introduction
-The AMD Versal&trade; schematic checker tool is a subset of the Versal Adaptive SoC Schematic Review Checklist ([XTP546](https://www.xilinx.com/member/forms/download/design-license.html?cid=90f995d8-c517-4adc-a95c-13a8994d6618&filename=xtp546-versal-schematic-review-checklist.zip)).   It appears as a separate tab in which you can specify the netlist and optionally specify voltage values, an AMD Vivado&trade; XDC file, and Xilinx Power Estimator (XPE) export file.
-The checker outputs a suite of report files, including a summary file with all of the most pertinent notes, warnings, and errors.<p>
+
+The Versal&trade; Schematic Checker tool is a subset of the [Versal Adaptive SOC Schematic Review Checklist (XTP546)](https://www.xilinx.com/member/forms/download/design-license.html?cid=90f995d8-c517-4adc-a95c-13a8994d6618&filename=xtp546-versal-schematic-review-checklist.zip). It is available as a separate tab, allowing users to specify the netlist and optionally include a Vivado XDC file. The Checker generates a suite of report files, including a summary file that highlights the most important notes, warnings, and errors.<p>
 
  ![Checker](images/checker.png)
 
-The currently supported netlist types are:
+The currently supported netlist types are:<p>
 
-<li>Cadence OrCAD (pstchip.dat, pstxnet.dat, pstxprt.dat)
-<li>Cadence Allegro (.tel)
-<li>Mentor Graphics Pads (.asc)
-<li>Intel Schematic Connectivity Format (.iscf)
++ Cadence OrCAD (pstchip.dat, pstxnet.dat, and pstxprt.dat)
++ Cadence Allegro (.tel)
++ Cadence Concise
++ Mentor Graphics Pads (.asc)
++ Pads Logic
++ Altium ORCAD2PCB
++ Intel Schematic Connectivity Format (.iscf)<p>
 
-The checker outputs six text-based report files:
+The checker outputs six text-based report files:<p>
 
-<li>*_summary.txt is a short file that only contains warnings and errors and other important information
-<li>*_verbose.txt is a longer file that contains more details about the checks completed
-<li>*_passive.txt contains reference designators, values, node connections, and primitives for each resistor, capacitor, and inductor in the schematic. Also lists all identified DNP components
-<li>*_acap.txt contains all Adaptive SoC pins, their pin name, the nets connected to them, and all devices connected to them
-<li>*_Memory_Devices.txt contains the list of memory devices that were checked
-<li>*_Passed_Tests.txt contains the list of successful checks
-<li>*_XDC_Check.txt contains the results of the "Schematic vs XDC" pinout checks
++ *_summary.txt: A concise file that includes warnings, errors, and other important information.
++ *_verbose.txt: A detailed file containing comprehensive information about all completed checks.
++ *_passive.txt: Lists reference designators, values, node connections, and primitives for each resistor, capacitor, and inductor in the schematic. It also includes all identified DNP components.
++ *_ASOC.txt: Provides details about all Adaptive SoC pins, including their names, the nets connected to them, and all associated devices.
++ *_Memory_Devices.txt: Lists the memory devices that were checked.
++ *_Passed_Tests.txt: Contains a record of all successfully completed checks.
++ *_XDC_Check.txt: Includes the results of the "Schematic vs. XDC" pinout checks.
 
 ## Obtaining the Schematic Checklist and Checker
 
-Download the Versal Adaptive SoC Schematic Review Checklist ([XTP546](https://www.xilinx.com/member/forms/download/design-license.html?cid=90f995d8-c517-4adc-a95c-13a8994d6618&filename=xtp546-versal-schematic-review-checklist.zip)).
-
-***Note***:   The current public version has a few bugs in the checker that are addressed in the internal version.   The internal version is attached in this design directory. Use this attached version until all fixes become public.
+Download the [Versal Adaptive SOC Schematic Review Checklist (XTP546)](https://www.xilinx.com/member/forms/download/design-license.html?cid=90f995d8-c517-4adc-a95c-13a8994d6618&filename=xtp546-versal-schematic-review-checklist.zip).
 
 ## Running the Checker
 
-Open the Schematic Checklist
-On the Project Info tab and click **Create New Checklist**.
-
+1. Open the Schematic Checklist.
+2. On the Project Info tab and click **Create New Checklist**.
  ![Checklist](images/checklist.png)
-
-- A new "Checklist(1)" tab opens.
+3. A new "Checklist(1)" tab will open.
 
 ## Device Details
 
-In the Checklist(1) tab, enter the device details beginning in cell B4.
-- Ensure to enter the reference designator used for the Adaptive SoC in the schematic.
-- Optional:   If you have an exported XML file from the Xilinx Power Estimator tool (XPE), you can use the **Import XML from XPE** button to automatically fill in the device details. However, you still need to enter the Adaptive SoC reference designator.
-
- ![Device Info](images/device_info.png)
-
-On the Checker tab, click the **Click to copy Adaptive SoC Device Information from Checklist(1) Tab**.
-- This copies the Adaptive SoC information from the "Checklist(1)" tab, along with the reference designator.
-
- ![Copy Device](images/copy_device.png)
+1. In the "Checklist(1)" tab, enter the device details in the beginning of the cell B4.
+2. Provide the reference designator used for the Adaptive SoC in the schematic.
+3. Optional: If you have an exported XML file from the Power Design Manager (PDM), use the **Import XML from PDM** button to populate device details automatically. The Adaptive SoC reference designator must still be entered manually.**
+![Device Info](images/device_info.png)
+4. Navigate to the Checker tab and select the appropriate checklist for the schematic check.
+5. If multiple checklists are available in this copy of XTP546, choose one from the list. (As shown in the following figure)
+![Choose Checklist](images/choose_checklist.png)
 
 ## Specify Netlist
 
-Enter the location of the netlist file(s) on row 8.   Click the **File Select...** button to navigate to the netlist file.   For Cadence OrCAD schematics where there are three .dat files, just select one of the files, but ensure that all three are present in the same directory.
-
- ![Specify Netlist](images/specify_netlist.png)
-
-## Enter Voltage Levels (Optional)
-
-This step is optional, but can help the checker determine if the proper voltage levels are present on each Adaptive SoC rail.
-
-Beginning in cell B13, enter the specific voltage values intended for each Adaptive SoC rail.   If values are not entered here, the tool  tries to infer the voltage value from the net name (for example,   VCC_0V70 is inferred as 0.70V).    If the voltage value is not specified here, or cannot be inferred from the net name, a warning is issued that the voltage level cannot be checked.
-
-![Enter Voltages](images/enter_voltages.png)
-
-## Specify PCB Decoupling Source (Optional)
-
-The checker lists all decoupling capacitors found on each Adaptive SoC rail in the schematic.   If you want the script to compare these quantities with the recommended decoupling quantities from the Xilinx Power Estimator (XPE) tool, specify the exported XPE XML file in cell P10, or via the **XML File Select...** button.    
-
-![PCB Decoupling](images/pcb_decoupling.png)
+1. Enter the location of the netlist file(s).
+2. Use the **Netlist File Select...** button to locate the netlist file.
+   - For Cadence OrCAD schematics, there are three .dat files, select one file ensuring all three are in the same directory.**
+![Specify Netlist](images/specify_netlist.png)
 
 ## Specify a validated XDC Pinout file (Optional)
 
-The checker can check all memory signals in the schematic to see if they are connected properly to their respective Adaptive SoC pins.   To do this, an XDC file that has been validated with the Vivado tools can be specified. Enter the XDC file name in cell P5 or via the **XDC File Select...** button.
+1. To check memory signal connections, specify an XDC file validated with Vivado&trade; tools.
+2. Use the **XDC File Select...** button to enter the XDC file name.
 
 ![XDC Pinout](images/xdc_pinout.png)
 
 ## Specify MIO Interfaces (Optional)
 
-The checker can determine if the MIO interface pins are connected properly in the schematic (for pull-ups/downs/series resistors, etc). To do this, the interfaces must be defined in the Checklist(1) tab.   Navigate to the *PMC & LPD MIO Interfaces* section in the Checklist(1) tab and specify the MIO pin locations for each interface (QSPI, OSPI, eMMC, SD, and so on.)
+1. To validate MIO interface pins (e.g., pull-ups, pull-downs, series resistors), define the interfaces in the checklist tab.
+2. Navigate to the PMC & LPD MIO Interfaces section in the selected checklist and specify the MIO pin locations for each interface (e.g., QSPI, OSPI, eMMC, SD).
+
+![Include MIO](images/include_mio.png)
 
 ![Specify MIO](images/specify_mio.png)
 
 ## Run the Checker
 
-After the device information, netlist location, and other optional files, voltages, and interfaces have been specified, click the big **Run Schematic Check** button at the top of the Checker tab. The checker takes around 60 seconds to run, but in some cases this could be as short as 20 seconds or as long as two minutes.
+After specifying the checklist, netlist location, XDC, and MIO interfaces, click the **Run Schematic Check on Selected Netlist/Checklist** button.
+
+The Checker takes approximately 30–60 seconds to run, though this may vary from 20 seconds to 2 minutes.
 
 ![Run Checker](images/run_checker.png)
 
-When the checker is completed, a window appears stating the run time.   Click **OK**.
+Upon completion, a window will display the run time. Click **OK** to proceed.
 
-## Versal Adaptive SoC Schematic Checker Feature List
+## Versal Adaptive SOC Schematic Checker Feature List
 
-<b>Pin Count Match:</b>   Checks that the number of package pins in the Adaptive SoC schematic matches the pin count of the corresponding package.   This can uncover any errors in the schematic symbol creation.
+<b>Pin Count Match:</b>  Checks the number of package pins in the Adaptive SOC schematic and matches the pin count of the corresponding package, uncovering any potential errors in the schematic symbol creation.
 
-<b>Voltage Values Within Datasheet Spec:</b>     Checks reported or inferred voltage values to be within datasheet specifications for each Adaptive SoC rail.
+<b>Voltage Values Within Datasheet Spec:</b>  Ensures inferred voltage values are within the datasheet limits for each Adaptive SoC rail.
 
-<b>Voltage rail value mismatch/power rail shorts:</b>   Checks to see if any reported or inferred Adaptive SoC rails are at different voltage levels despite being connected to the same schematic rail net.
+<b>Voltage rail value mismatch/power rail shorts:</b>  Identifies if any Adaptive SoC rails have inconsistent voltage levels despite being on the same schematic net.
 
-<b> Adaptive SoC Power/Ground Pin Match:</b>   Checks to see if the number of voltage and ground pins for the Adaptive SoC in the schematic matches the number of corresponding power/ground pins in the Adaptive SoC package file.
+<b>Adaptive SOC Power/Ground Pin Match:</b>  Confirms the number of voltage and ground pins in the schematic matches the Adaptive SoC package file.
 
-<b>All Adaptive SoC power/ground pins connect to same net:</b>    Checks to see that all power/ground pins on the Adaptive SoC connect to one single net name.   While it is not an error if they are not all connected to the same net (that is, sense lines), any warnings are still valuable.
+<b>All Adaptive SOC power/ground pins connect to same net:</b>  Checks that all power/ground pins on the Adaptive SOC connect to one single net name.  While, connection to the same net do not specify an error (i.e., sense lines), any warnings are still valuable.
 
-<b>VCCAUX_SMON/GND_SMON filters:</b>    Checks to see if there is a filter between VCCAUX and VCCAUX_SMON.  Checks to see if there is a filter between GND and GND_SMON.
+<b>VCCAUX_SMON/GND_SMON filters:</b>  Verifies the presence of filters between VCCAUX and VCCAUX_SMON, and between GND and GND_SMON.
 
-<b>Decoupling/Power Scenario Evaluation:</b>    Determines power scenario (as defined in The Xilinx Power Estimator (XPE)) and lists required  versus found decoupling capacitors connected to each rail group.    This works best when an XPE file is specified.
+<b>Decoupling Capacitor Reporting:</b>  Lists decoupling capacitors for each Adaptive SoC power rail. These can be manually compared against PDM recommendations.
 
-***Note***:   The checker does not check to see if quantities match. It only places the quantities side-by-side for comparison.
+<b>IO_VR properly connected:</b>  Ensures each IO_VR pin is properly connected with a 240Ω resistor to IO_700/IO_800.
 
-<b>IO_VR properly connected:</b>    Checks each IO_VR pin for proper connection of 240Ω to IO_700/IO_800.
+<b>GTY RREF connection:</b>  Checks for 100Ω resistor between GTY_RREF and GTY_AVTTRCAL.
 
-<b>GTY RREF connection:</b>    Checks for 100Ω resistor between GTY_RREF and GTY_AVTTRCAL.
+<b>GTY signals AC Coupling Check:</b>  Validates the presence of proper series AC capacitors on each GTY TX/RX/CLK pin.
 
-<b>GTY signals AC Coupling Check:</b>   Checks for proper series AC capacitor on each GTY TX/RX/CLK pin.
+<b>Dedication Pin Connection Check:</b>  Checks proper terminations for all dedicated pins (e.g., Bank 503).
 
-<b>Dedication Pin Connection Check:</b>
-Checks all dedicated pins (Bank 503) for proper terminations.
-<li><b>MODE pins:</b> Tied directly or 4.7 kΩ to VCC_503 or < 1 kΩ to GND
-<li><b>ERROR_OUT:</b> Pull-up to VCCO_503
-<li><b>PUDC_B:</b> Tied directly or by < 1 kΩ to GND or VCCO_503
-<li><b>DONE:</b> 4.7 kΩ to VCCO_503
-<li><b>JTAG pins:</b> TCK/TMS/TDI connected to header and/or to ground
-<li><b>POR_B:</b> 4.7 kΩ to VCCO_503
++ <b>MODE pins:</b> Tied directly or 4.7 kΩ to VCC_503 or < 1 kΩ to GND
++ <b>ERROR_OUT:</b> Pull-up to VCCO_503
++ <b>PUDC_B:</b> Tied directly or by < 1 kΩ to GND or VCCO_503
++ <b>DONE:</b> 4.7 kΩ to VCCO_503
++ <b>JTAG pins:</b> TCK/TMS/TDI connected to header and/or to ground
++ <b>POR_B:</b> 4.7 kΩ to VCCO_503
 
-<b>MIO Pin check:</b>   
+<BR><b>MIO Pin check:</b>
+Checks whether MIO pins are properly connected/termination based on how they are defined in the checklist:
++ <b>QSPI:</b> clock, cs, loop, IO_pull-up/down
++ <b>OSPI:</b> clock, data, strobe, cs, reset
++ <b>SD_eMMC:</b> clock, cmd, data
++ <b>SelectMap:</b> clock, IO, cs, rdwr, busy
++ <b>Tamper Trigger</b>
++ <b>I2C:</b> scl, sda
++ <b>GEM Ethernet:</b> clock, ctl, data
++ <b>CAN:</b> tx, rx
++ <b>PCIe Reset</b>
++ <b>SPI:</b> clock, cs, so, mo
++ <b>Trace:</b> clock, ctl, data
++ <b>Triple-Time Counter (TTC):</b> clock, out
++ <b>UART:</b> tx, rx
++ <b>USB2:</b> clock, data, reset
++ <b>Windowed-Watchdog Timer (WWDT):</b> clock, reset, int, ws
 
-Checks to see if MIO pins are properly connected/termination based on how they are defined in the checklist:
-<li><b>QSPI:</b> clock, cs, loop, IO_pull-up/down
-<li><b>OSPI:</b> clock, data, strobe, cs, reset
-<li><b>SD_eMMC:</b> clock, cmd, data
-<li><b>SelectMap:</b> clock, IO, cs, rdwr, busy
-<li><b>Tamper Trigger</b>
-<li><b>I2C:</b> scl, sda
-<li><b>GEM Ethernet:</b> clock, ctl, data
-<li><b>CAN:</b> tx, rx
-<li><b>PCIe Reset</b>
-<li><b>SPI:</b> clock, cs, so, mo
-<li><b>Trace:</b> clock, ctl, data
-<li><b>Triple-Time Counter (TTC):</b> clock, out
-<li><b>UART:</b> tx, rx
-<li><b>USB2:</b> clock, data, reset
-<li><b>Windowed-Watchdog Timer (WWDT):</b> clock, reset, int, ws
+<BR><b>Memory Pin Check:</b>
+Checks all supported memory types for proper terminations (address to VTT, clock to RC, etc.,) based on how they are defined in the checklist.
 
-<b>Memory Pin Check:</b>  
+**NOTE**: This tool will not verify legal pinouts. For pinout validations, it is highly recommended to verify the pinouts through the Vivado tools. Vivado is the only trusted source for up-to-date pinout verifications.
 
-Checks all supported memory types for proper terminations (address to VTT, clock to RC, and so on,) based on how they are defined in the checklist.
+<b>DDR5:</b><BR>
++ <b>Data:</b> point-to-point
++ <b>Strobe:</b> point-to-point
++ <b>Address:</b> Fly-by
++ <b>Clock:</b> Fly-by
++ <b>Reset:</b> 4.7 kΩ to GND
++ TEN,CAI,ALERT,MIR<p><BR>
 
-***Note***: This tool does not verify legal pinouts.   For pinout validations, it is highly recommended to verify the pinouts through the Vivado tools.   Vivado is the only trusted source for up-to-date pinout verifications.
+<b>LPDDR5:</b>
++ <b>Data:</b>  point-to-point
++ <b>Strobe:</b>  point-to-point
++ <b>Address:</b>  point-to-point
++ <b>Clock:</b>  point-to-point
++ <b>Reset:</b> 4.7k to GND
++ <b>CS,ZQ:</b>pull-up<p><BR>
 
-<b>DDR4</b><BR>
-<li><b>Data:</b> point-to-point
-<li><b>Strobe:</b> point-to-point
-<li><b>Address:</b> With VTT check (as appropriate)
-<li><b>Clock:</b> With R/R/C check
-<li><b>Reset:</b> 4.7 kΩ to GND<p>
+<b>DDR4:</b><BR>
++ <b>Data:</b> point-to-point
++ <b>Strobe:</b> point-to-point
++ <b>Address:</b> With VTT check (as appropriate)
++ <b>Clock:</b> With R/R/C check
++ <b>Reset:</b> 4.7 kΩ to GND<p><BR>
+
 <b>LPDDR4:</b>
-<li><b>Data:</b>  point-to-point
-<li><b>Strobe:</b>  point-to-point
-<li><b>Address:</b>  point-to-point
-<li><b>CKE:</b>  Totem-Pole Termination
-<li><b>Clock:</b>  point-to-point
-<li><b>Reset:</b> 4.7 kΩ to GND<P>
++ <b>Data:</b>  point-to-point
++ <b>Strobe:</b>  point-to-point
++ <b>Address:</b>  point-to-point
++ <b>CKE:</b>  Totem-Pole Termination
++ <b>Clock:</b>  point-to-point
++ <b>Reset:</b> 4.7k to GND<P><BR>
 
-<b>RLD3:</b> data, DK, QK, QVLD, Reset (4.7 kΩ to GND)
+<b>RLD3:</b> data, DK, QK, QVLD, Reset (4.7k to GND)
 
-<b>QDR-IV:</b> address, command, reset (4.7 kΩ to GND)
+<b>QDR-IV:</b> address, command, reset (4.7k to GND)
++ <b>Reset:</b> 4.7 kΩ to GND<P><BR>
 
-<b>ALL:</b>  checks address pins to see if the net name matches the memory device pin name (for example, C0_DDR4_A10 matches pin A10 on the memory device).
+<b>ALL:</b>  Checks address pins and if the net name matches the memory device pin name (for example, C0_DDR4_A10 matches pin A10 on the memory device).
 
-<li>VTT pins/termination is checked or sees if it connects to an IC that also connects to VCCO (assumed VTT regulator).
-<li>VREFCA pins (as applicable) on each memory device are checked for proper connection (including resistor divide) and voltage.
-<li>ZQ pins (as applicable) on each memory device are checked for proper resistor value and connection to either ground or power (as required).
++ VTT pins/termination are checked to see if it connects to an IC that also connects to VCCO (assumed VTT regulator).
++ VREFCA pins (as applicable) on each memory device are checked for proper connection (including resistor divide) and voltage.
++ ZQ pins (as applicable) on each memory device are checked for proper resistor value and connection to either ground or power (as required).
++ Automatic memory interface pin checking using a user-specified XDC file. This is optional.
 
-Automatic memory interface pin checking using a user-specified XDC file. This is optional.
+<BR>
+<b>Signal Polarity Check:</b>   Verifies P/N swaps based on the Adaptive SoC package file and the known external device pinout. It also attempts to determine potential swaps based on net names.
 
-<b>Signal Polarity Check:</b>   Checks for P/N swaps based on Adaptive SoC package file and known  external device pinout.    Also attempts to determine potential swaps based on net names.
+<BR>
+<b>NoC Pinout Check:</b>   Compares the schematic pinout with the pinouts specified in the XDC file, if provided.
+<BR>
 
-<b>NoC Pinout Check:</b>   If an XDC file is specified, the schematic pinout is checked against the pinouts in the XDC file.
+## Important Notes
 
++ Subtle variations in some netlist formats may cause issues with the Checker. If you notice any unusual errors, contact AMD to address them promptly.<br>
++ If the checker tool does not support a netlist format, contact AMD to request a parser for it.<br>
++ The Checker does not compare the recommended decoupling in PDM with the schematic because multiple decoupling schemes can be used. Instead, it lists the decoupling found in the schematic, allowing you to manually compare it with the PDM recommendations.<br>
++ The Checker does not validate memory pinouts. It assumes you have already validated the pinouts specified in the optional XDC file in the Vivado<p>
 
-<hr class="sphinxhide"></hr>
+## Planned Improvements
 
-<p class="sphinxhide" align="center"><sub>Copyright © 2020–2024 Advanced Micro Devices, Inc.</sub></p>
+Automatic detection of MIO interfaces (QSPI, OSPI, Ethernet, etc) or through optional Vivado output file imports (cips.xio).<br>
 
-<p class="sphinxhide" align="center"><sup><a href="https://www.amd.com/en/corporate/copyright">Terms and Conditions</a></sup></p>
+<hr size =2>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+<p align="center"><sup>XD057 | Copyright&copy; 2024 Xilinx, Inc.</sup></p>
