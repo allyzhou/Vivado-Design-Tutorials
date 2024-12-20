@@ -47,6 +47,10 @@ These tutorials show different design aspects for using the NoC and integrated m
 
 These tutorials show considerations of PCB design when working with Versal devices. Topics range from memory interface and pinout planning to a schematic checker tool that provides guidance for a wide range of details.
 
+## <a href="./PCI_Express/">PCI Express&reg;</a>
+
+These tutorials cover different aspects of designing Versal solutions which use PCI Express.
+
 
 ## AI Engines
 
@@ -55,5 +59,11 @@ AI Engines are supported through the Vitis&trade; Unified Development Environmen
 
 <hr class="sphinxhide"></hr>
 
+<p class="sphinxhide" align="center"><sub>Copyright © 2020–2024 Advanced Micro Devices, Inc.</sub></p>
+
+<p class="sphinxhide" align="center"><sub>PCI Express&reg; is a trademark or registered trademark of PCI-SIG&reg; Corporation</sub></p>
+
+<p align="center" dir="auto"><sup><a href="https://www.amd.com/en/corporate/copyright" rel="nofollow">Terms and Conditions</a></sup></p>
+=======
 <p class="sphinxhide" align="center"><sub>Copyright © 2024 Advanced Micro Devices, Inc.</sub></p>
 <!-- # SPDX-License-Identifier: X11 -->  
