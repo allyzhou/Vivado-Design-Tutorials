@@ -1,4 +1,4 @@
-﻿<table class="sphinxhide" width="100%">
+<table class="sphinxhide" width="100%">
  <tr width="100%">
     <td align="center"><img src="https://github.com/Xilinx/Image-Collateral/blob/main/xilinx-logo.png?raw=true" width="30%"/><h1>Versal™ Adaptive SoC DFX Tutorials</h1>
     <a href="https://www.amd.com/en/products/software/adaptive-socs-and-fpgas/vivado.html">See Vivado™ Development Environment on amd.com</a>
@@ -8,7 +8,7 @@
 
 # Overlap DRC and Disjoint Pblock Solutions for Versal DFX
 
-***Version: AMD Vivado&trade; 2024.1***
+***Version: AMD Vivado&trade; 2024.2***
 
 ## Abstract
 This design demonstrates solutions for scenarios that involve overlap DRCs (two reconfigurable Pblocks interfering with each other) as well as disjoint Pblocks (a clocking resource region separated from the main reconfigurable Pblock)
@@ -17,9 +17,12 @@ This design demonstrates solutions for scenarios that involve overlap DRCs (two 
 DFX designs for Versal devices have unique challenges related to ranging Pblocks in designs with two or more reconfigurable partitions (RP). Due to the alignment of Boundary Logic Interface (BLI) tiles that are automatically ranged based on other ranged sites within an HSR clock region, the placement and routing footprints can extend farther than originally intended for a given Pblock rectangle. The extended footprints can lead to overlapping Pblock issues, reported by Design Rule Checks (DRC). 
 
 ### Disjoint Pblocks for a Reconfigurable Partition
-A design may require logic that must be placed in a non-contiguous area between Fabric Super Region (FSR) and Horizontal Super Region (HSR) areas that would require a disjoint Pblock. Only NoC and clocking resources can communicate between the disjoint Pblock sections. 
+A design may require logic that must be placed in a non-contiguous area between Fabric Super Region (FSR) and Horizontal Super Region (HSR) areas that would require a disjoint Pblock, meaning a single pblock with two (or more) non-contiguous regions. 
+Only NoC and clocking resources can communicate between the disjoint Pblock sections. 
+This is not necessarily because of another reconfigurable pblock between the disjoint areas (though this is shown in this example) but because the fabric between the areas is not owned by the target reconfigurable partition.
 
-In a disjoint Pblock case, the main part of the reconfigurable Pblock in the fabric region that contains all but certain clocking resources is referred to as the Primary Region. The other part which includes sites of the clock sources and the fabric region adjacent to the clock sources is referred to as the Secondary Region. 
+In a disjoint Pblock case, the main part of the reconfigurable Pblock in the fabric region that contains all but certain clocking resources is referred to as the Primary Region. 
+The other part which includes sites of the clock sources and the fabric region adjacent to the clock sources is referred to as the Secondary Region. 
 Currently Vivado supports one Primary Region and one Secondary Region in a disjoint Pblock. The following image shows a disjoint Pblock for RP1 in a two RP design on a two SLR device.
 
 ![Two RP Layout](./images/disjoint_pblocks.png)
@@ -36,7 +39,7 @@ This lab will show:
 NOTE: This lab is only for DFX learning in Vivado and has not been validated in hardware. 
 
 ## Introduction 
-You will be using a standard Vivado DFX project as the starting point for this lab. It is a BD based designs with two Reconfigurable Partitions (RP1 and RP2). The design uses NoC IP and NoC INI to connect the IPs. The design is targeted to a two SLR Versal device to bring out the issues commonly seen for multi-RP multi-SLR DFX designs.
+You will be using a standard Vivado DFX project as the starting point for this lab. It is a BD-based design with two Reconfigurable Partitions (RP1 and RP2). The design uses NoC IP and NoC INI to connect the IPs. The design is targeted to a two SLR Versal device (VP1502) to note some issues commonly seen for multi-RP multi-SLR DFX designs.
 
 ![Top-Level Block Design](./images/main_project_bd.png)
 
@@ -68,52 +71,52 @@ Most of the floorplanning-related DRCs can be caught after synthesis by calling 
 
 ![Report DFX DRCs](./images/report_drc.png)
 
-Five types of DFX DRCs are reported:
+Four types of DFX DRCs are reported across seven message codes:
 
-1-	HDPR-39: This DRC reports a BLI tile conflict. A tile in the HSR region of the RP in blue highlighted Pblock is also part of the RP highlighted in yellow.
+1-	ERROR: HDPR-66 and HDPR-156: These DRCs report a pblock overlap. A tile in the HSR region of the RP in blue highlighted Pblock is also part of the RP highlighted in yellow.
 
-![HDPR-39](./images/DRC_HDPR-39.png)
+![HDPR-66](./images/DRC_HDPR-66.png)
+![HDPR-156](./images/DRC_HDPR-156.png)
 
-2-	HDPR-131: This DRC reports that an MMCM in the RP in blue requires a BLI tile and fabric for tie-off purposes, but viable tiles are owned by the RP in yellow. 
+2- HDPR-61, HDPR-134 and HDPRA-63: These DRCs guide users to appropriate construction of disjoint Pblocks. The required methodology is to add a child Pblock to define the primary region. Only NoC and clocking logic can communicate between disjoint rectangles, as any other connection will require routing resources between the Pblock segments that are not owned by the Pblock. 
 
-![HDPR-131](./images/DRC_HDPR-131.png)
-
-3-	and 4- HDPR-134 and HDPRA-63: These DRCs guide users to appropriate construction of disjoint Pblocks. The required methodology is to add a child Pblock to define the primary region. Only NoC and clocking logic can communicate between disjoint rectangles, as any other connection will require routing resources between the Pblock segments that are not owned by the Pblock. 
-
+![HDPR-61](./images/DRC_HDPR-61.png)
 ![HDPR-134](./images/DRC_HDPR-134.png)
 ![HDPRA-63](./images/DRC_HDPRA-63.png)
 
-5-	HDPR-124: This DRC reports that IO Bank 703 is shared between static and pblock_rp1.
+3-	HDPR-124: This DRC warning reports that IO Bank 703 is shared between static and pblock_rp1.
 
 ![HDPR-124](./images/DRC_HDPR-124.png)
 
+4-	HDPR-147: This DRC warning reports that pblock_rp1 is not aligned to fundamental DFX programmable units.
+
+![HDPR-147](./images/DRC_HDPR-147.png)
+
+If you attempt to implement the design at this point, errors will be reported in the opt_design step. The first implementation run, impl_BLI_ERROR, shows this failure mode.
+
 **STEP 3 : Analyze the DRCs**
 
-**HDPR-39:** Examine the first DRC under section HDPR-39 in the DRC window. The "Overlapping tile :" section of the DRC error reports the tile that is shared by two RPs. BLI_CLE_BOT_CORE_X30Y0 is the conflicting tile. 
+**HDPR-66:** Examine the first DRC under section HDPR-66 in the DRC window. The DRC error reports the site that is shared by two RPs. BLI_A_GRP0_X29Y0 is the conflicting site. 
 ```
-Overlapping tile : BLI_CLE_BOT_CORE_X30Y0 
-- Is in PLACEMENT footprint of reconfigurable pblock ‘pblock_rp1’
-      Footprint Expansion Path : 
-         - BLI_CLE_BOT_CORE_X30Y0 tile in PLACEMENT footprint  for HSR_ROUTING
-         - CMT_MMCM_X25Y0 tile in PBLOCK
-    - Is in PBLOCK footprint of reconfigurable pblock ‘pblock_rp2’ 
-      Footprint Expansion Path : 
-         - BLI_CLE_BOT_CORE_X30Y0 tile in PBLOCK
+HDPR #1 HD.RECONFIGURABLE Pblock 'pblock_rp1' and Pblock 'pblock_rp2' overlap.  Please re-floorplan Pblocks to ensure that reconfigurable pblocks don't have overlap with other rm pblocks. Please run 'set_param hd.reportAllOverlapSite 1' to see all overlapping sites.
+Overlapping sites (1): 'BLI_A_GRP0_X29Y0'. 
 ```
 
-The message suggests that "BLI_CLE_BOT_CORE_X30Y0" is required for HSR_ROUTING for tile "CMT_MMCM_X25Y0" present in pblock_rp1 but BLI_CLE_BOT_CORE_X30Y0 is part of pblock_rp2, causing an overlap. 
+The message explains that "BLI_A_GRP0_X29Y0" is present in both pblock_rp1 and pblock_rp2, causing an overlap. The 28 instances of the error message show the extent of the overlap on a site by site basis.
 
 In the device view you can visualize the overlapping tiles. To show the placement footprint for both Pblocks, use the get_dfx_footprint command:
 
 ```
 highlight_objects -color blue [get_dfx_footprint -place -of_objects [get_cells design_1_i/rp1rm1_0]]
 mark_objects -color yellow [get_dfx_footprint -place -of_objects [get_cells design_1_i/rp2rm1_0]]
-mark_objects -color green [get_tiles "*CMT_MMCM_X25Y0*"]
+mark_objects -color green [get_sites "BLI_A_GRP0_X29Y0"]
 ```
 
-One call to get_dfx_footprint uses highlight_objects and the other uses mark_objects (and with different colors) so that any tile that belongs to each set can be easily seen.  In the image below the overlapping tiles are circled. The CMT tile (CMT_MMCM_X25Y0) that forces this footprint for pblock_rp1 is marked in green for reference. 
+One call to get_dfx_footprint uses highlight_objects and the other uses mark_objects (and with different colors) so that any tile that belongs to each set can be more easily seen.  In the image below the overlapping tiles are circled. One of the BLI sites (BLI_A_GRP0_X29Y0) that forces this footprint for pblock_rp1 is marked in green. Zooming in further, you can see 29 instances of tiles that are both highlighted blue and contain a yellow mark, corresponding with the number of DRC messages received.
 
-![Overlapping sites in two pblocks](./images/HDPR-39_zoom.png)
+Note: At first it may appear the overlap is due to overlap of the main pblock rectangles in the middle of this image, but zooming even more closely you can see that there are no logical resources in this "overlapping" zone.
+
+![Overlapping sites in two pblocks](./images/HDPR-66_zoom.png)
 
 You can also use the -overlap option for the get_dfx_footprint command. This will return all tiles that overlap between the requested Pblock and any other reconfigurable Pblock.
 ```
@@ -121,39 +124,30 @@ You can also use the -overlap option for the get_dfx_footprint command. This wil
 unhighlight_objects
 unmark_objects
 
-mark_objects -color green [get_tiles "*CMT_MMCM_X25Y0*"]
+mark_objects -color green [get_sites "BLI_A_GRP0_X29Y0"]
 highlight_objects -color red [get_dfx_footprint -overlap -of_objects [get_cells design_1_i/rp1rm1_0]]
 ```
 
 ![get_dfx_footprint_overlap](./images/pblock_overlap.png)
 
-Note: The `get_dfx_footprint -overlap` command will also show clocking and interconnect tiles which can be shared by multiple RPs and will not result in a DRC. 
-
-Additionally, the overlapping tiles are listed in the Overlapped_AllTiles.tcl script found in the hd_visual folder under the implementation runs directory, once it is generated by the implementation tools.
 
 **STEP 4: Resize Pblock to resolve DRC**
 
 To resolve the first violation, at least one Pblock must be resized. This is a design dependent decision. You can use one of these two options:
 
 *Option 1:*  
-Resize a Pblock to remove the overlap. This must be done after highlighting the Pblocks as explained above.
+Reduce the size of pblock_rp2 to remove the overlap.
 
 ``
 resize_pblock pblock_rp2 -remove CLOCKREGION_X2Y1
 ``
 
 *Option 2:*  
-Resize a Pblock using one of the "Floorplan fix resolution" suggestions mentioned in the DRC error. 
-This option of using the floorplan fix resolution from DRC may require iterative steps of fixing the floorplan and running DRC multiple times.
+Move pblock_rp1 to avoid the overlap.
 
-Each will resolve the DRC, but consider the choice carefully.  For the first instance of HDPR-39, you should not use "Suggestion to keep 'BLI_CLE_BOT_CORE_X30Y0'" as it is the command to remove CMT_MMCM_X25Y0 from pblock_rp1, but the RM netlist rp1rm1_0 requires MMCM in that Pblock. Additional changes will be required if this option is selected
+Each action will resolve the DRC, but consider the choice carefully. The RM netlist rp1rm1_0 requires a MMCM in that Pblock (hence the need for a disjoint region), and this MMCM may have clock pin or other clocking resource implications. Additional changes may be required if option 2 is selected. If option 1 is selected, fewer resources remain for implementing RP2 in pblock_rp2. Further adjustments (such as removing only the lower half and/or the right side of the clock region) will minimize this loss.
 
-*Suggestion to keep 'CMT_MMCM_X25Y0' in 'pblock_rp1'  
-set pblock_rp2_tiles [get_dfx_footprint -source [get_pblocks pblock_rp1] -tile [get_tiles CMT_MMCM_X25Y0] -conflict [get_pblocks pblock_rp2]]  
-resize_pblock [get_pblocks pblock_rp2] -remove [ get_sites -of [ get_tiles $pblock_rp2_tiles ] ]*
-
-
-Note: This lab does not resolve all DRC errors individually. Using option 1 above will fix DRC error HDPR-39 as well as HDPR-131. 
+Note: This lab does not resolve all DRC errors individually and in every way possible. Using option 1 above will fix DRC error HDPR-66 as well as HDPR-156. HDPR-156 is a more general pblock overlap DRC that refers users to the `get_dfx_footprint -overlap` strategy rather than call out individual site overlap instances.
 
 For this design, use option 1 above and resize a Pblock to resolve the overlaps. 
 
@@ -165,28 +159,47 @@ The following image shows the new design floorplan with highlighting updated.
 
 **STEP 5: Run implementation and analyze new routing error**
 
-From the Synthesized design after fixing the DRC errors, run `opt_design`, `place_design`, and `route_design` from the TCL console. You can also launch the implementation run for impl_SLL_ERROR in the Design Runs tab.
+From the Synthesized design after fixing the DRC errors, run `opt_design`, `place_design`, and `route_design` from the TCL console. You can also launch the implementation run for impl_SLL_ERROR in the Design Runs tab. The changes in the floorplan do not have to be saved as they are already captured in constr_2.xdc.
 
 You will see route_design has failed with the following error during the SLL assignment phase:
 
-![SLL Routing Error](./images/SLL_routing_error.png)
-
-*ERROR: [Route 35-3424] SLL Assignment failed. There are no SLL nodes available in SLR Cut [0-1] for net 'design_1_i/rp1rm1_0/proc_sys_reset_1/U0/SEQ/pr_reg_0'.*
-
-As seen in the SLL table, net demand is low and there is sufficient capacity for routing. To debug the error, check the schematic for the net mentioned in the error and mark the source and load cells using the following commands with design_1_wrapper_routed_error.dcp open in memory:
-
 ```
-show_objects -name fail_net [get_nets design_1_i/rp1rm1_0/proc_sys_reset_1/U0/SEQ/pr_reg_0]
-mark_objects -color yellow [get_cells {design_1_i/rp1rm1_0/proc_sys_reset_1/U0/SEQ/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N_i_1}]
-mark_objects -color green [get_cells {design_1_i/rp1rm1_0/proc_sys_reset_1/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N}]
+ERROR: [Route 35-3424] SLL Assignment failed. There are no SLL nodes available in SLR Cut [0-1] for net 'design_1_i/HD_PR_InsertedStaticNet_SharedDriver_design_1_i_rp1rm1_0_ext_reset_in_1'.
 ```
 
-![SLL Device View](./images/SLL_device_view.png)
-![SLL Failing Path](./images/SLL_net_properties.png)
+As the node name indicates, this net has been inserted by the HD (Hierarchical Design) part of the flow to support a partition pin between static and dynamic regions. The end of the log file reports that a design checkpoint representing the error state has been generated. Open this checkpoint and examine the contents. 
+After the failing net is identified in the Find results, you can select the net and use the F4 key to show the schematic for that specific net. Mark both source and load to see the path that needs to be routed. You can see that the source is in the static region and the load is in the dynamic region and and SLR boundary separates them.
 
-The failing net is within an RM (rp1rm1_0) but the placement is such that it requires a non-clock net to route between disjoint Pblock rectangles. This is not allowed, as no general routing resources are declared that would provide a path from source to load. To fix such routing issues and to have control over placement in Primary and Secondary regions, a guided floorplan is required. 
+```
+open_checkpoint ./project_1/project_1.runs/impl_SLL_ERROR/design_1_wrapper_routed_error.dcp
+show_objects -name fail_net [get_nets design_1_i/HD_PR_InsertedStaticNet_SharedDriver_design_1_i_rp1rm1_0_ext_reset_in_1]
+mark_objects -color green [get_cells design_1_i/HD_PR_InsertedStaticInst_SharedDriver_design_1_i_rp1rm1_0_ext_reset_in_1]
+mark_objects -color orange [get_cells design_1_i/rp1rm1_0/proc_sys_reset_1/U0/EXT_LPF/ACTIVE_HIGH_EXT.ACT_HI_EXT/GENERATE_LEVEL_P_S_CDC.SINGLE_BIT.CROSS_PLEVEL_IN2SCNDRY_IN_cdc_to]
+```
 
-For more information on the SLL Assignment table, please consult Static Routing Across SLR Boundaries in Vivado Design Suite User Guide: Dynamic Function eXchange (UG909)
+![Failing Route Schematic](./images/failing_route.png)
+![Failing Route Schematic Marked](./images/failing_route_marked.png)
+![Failing Route Device View](./images/failing_route_fplan.png)
+
+This path looks reasonable, even though it crosses an SLR boundary. So what is the reason for the routing failure?
+
+The DFX flow inserts partition pins as intermediate nodes for reconfigurable partition boundaries. These pins have specific locations (PPLOCs) determined by the placer, typically on logical resource pins or interconnect tiles. Find PPLOCs by using the `get_pplocs` command with the `-pins` or `-nets` option. For this particular net, use this command:
+```
+get_pplocs -nets [get_nets design_1_i/HD_PR_InsertedStaticNet_SharedDriver_design_1_i_rp1rm1_0_ext_reset_in_1]
+```
+
+The result is a specific pin on an interconnect tile, in this case <b>INT_X32Y3/OUT_NN1_W_BEG0</b>. (Adjust subsequent instructions if a different interconnect tile is selected.) Mark this tile to see where it is located, then place that location in the context of the routing footprint of the disjoint pblock.
+```
+mark_objects -color red [get_tiles INT_X32Y3]
+highlight_objects -color blue [get_dfx_footprint -route -of [get_cells design_1_i/rp1rm1_0]]
+```
+
+![PPLOC in Disjoint Pblock](./images/failing_route_fplan_pploc_footprint.png)
+
+The PPLOC is within the RP pblock routing footprint as expected and required, as this is the consistent interface point for this module pin for all routing solutions for any new reconfigurable module that comes along.
+The routing error occurs because the route required in not possible. To route the connection from source (green) to load (orange) through the PPLOC (red) requires routing resources owned by the reconfigurable partition pblock for the second section of the route, and the only possible connections between the disjoint regions are on dedicated clock lines. 
+Therefore, routing the connection between the PPLOC (red) and load (orange) is not possible given the current PPLOC placement. To fix such routing issues and to have control over placement in Primary and Secondary regions for design logic as well as partition pins, a guided floorplan is required. 
+
 
 **STEP 6: Use a guided floorplan**
 
@@ -227,6 +240,24 @@ reset_property HD.PARTPIN_LOCS [get_pins $cell/*]
 place_design
 route_design
 ```
+Upon completion of `route_design`, the implemented design can be opened. Examine the design to see the PPLOC for the reset net is now in the main section of the pblock, which is why it was able to be successfully routed.
+```
+mark_objects -color green [get_cells design_1_i/HD_PR_InsertedStaticInst_SharedDriver_design_1_i_rp1rm1_0_ext_reset_in_1]
+mark_objects -color orange [get_cells design_1_i/rp1rm1_0/proc_sys_reset_1/U0/EXT_LPF/ACTIVE_HIGH_EXT.ACT_HI_EXT/GENERATE_LEVEL_P_S_CDC.SINGLE_BIT.CROSS_PLEVEL_IN2SCNDRY_IN_cdc_to]
+get_pplocs -nets [get_nets design_1_i/HD_PR_InsertedStaticNet_SharedDriver_design_1_i_rp1rm1_0_ext_reset_in_1]
+```
+This time, however, the PPLOC reported is in a new location, <b>INT_X80Y341/OUT_SS1_E_BEG1</b>.
+```
+mark_objects -color red [get_tiles INT_X80Y341]
+highlight_objects -color blue [get_dfx_footprint -route -of [get_cells design_1_i/rp1rm1_0]]
+highlight_objects -color yellow [get_nets design_1_i/HD_PR_InsertedStaticNet_SharedDriver_design_1_i_rp1rm1_0_ext_reset_in_1]
+```
+The complete path can now be legally routed.
+
+![Successful Routing Result](./images/full_design_routed.png)
+![Successfully Routed Net](./images/routed_net_closeup.png)
+
+### Summary
 
 The constraints for the guided floorplan are captured in "constr_3.xdc" under constraint set "constrs_3" and used for the "impl_GUIDE_FIX" implementation run.
 

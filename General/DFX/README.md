@@ -6,7 +6,7 @@
  </tr>
 </table>
 
-# Versal Architecture-Specific Tutorials
+# Vivado Architecture-Independent Tutorials
 
 
 ## Dynamic Function eXchange (DFX)

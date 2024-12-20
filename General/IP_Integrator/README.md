@@ -6,7 +6,10 @@
  </tr>
 </table>
 
-# IP Integrator Tutorials
+# Vivado Architecture-Independent Tutorials
+
+
+## IP Integrator Tutorials
 
 <table style="width:100%">
  <tr>
