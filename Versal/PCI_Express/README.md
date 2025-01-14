@@ -10,7 +10,7 @@
 
 ## <a href="./PCIeIP_Migration_to_XCVRsWizSubsystem/">Migrate PCIe&reg; Design to Use New Transceivers Wizard Subsystem </a>
 
-This tutorial provides instructions to migrate a design with PCI Express to use the new Versal Adaptive SoC Transceivers Wizard <ins>Subsystem</ins> IP core.
+This tutorial provides instructions to migrate a design with PCI Express&reg; to use the new Versal Adaptive SoC Transceivers Wizard <ins>Subsystem</ins> IP core.
 
 
 <hr class="sphinxhide"></hr>
